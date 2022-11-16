@@ -49,6 +49,9 @@ func main() {
 		log.Fatalln(err)
 	}
 	log.Println(fmt.Sprintf("policy : %s", policy))
+
+	url := getImageURL(endpoint, bucketName, objectName)
+	log.Println("URL: ", url)
 }
 
 func createBucket(minioClient *minio.Client, ctx context.Context, bucketName string, location string) {
@@ -65,6 +68,10 @@ func createBucket(minioClient *minio.Client, ctx context.Context, bucketName str
 	} else {
 		log.Printf("Successfully created %s\n", bucketName)
 	}
+}
+
+func getImageURL(endpoint string, bucketName string, objectName string) string {
+	return fmt.Sprintf("%s/%s/%s", endpoint, bucketName, objectName)
 }
 
 func uploadFileToBucket(minioClient *minio.Client, ctx context.Context, bucketName string, objectName string, filePath string, contentType string) {
