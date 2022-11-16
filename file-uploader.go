@@ -44,6 +44,11 @@ func main() {
 
 	// expiryTime := time.Second * 24 * 60 * 60 * 7
 	// getURLObject(minioClient, ctx, bucketName, objectName, expiryTime)
+	policy, err := minioClient.GetBucketPolicy(ctx, bucketName)
+	if err != nil {
+		log.Fatalln(err)
+	}
+	log.Println(fmt.Sprintf("policy : %s", policy))
 }
 
 func createBucket(minioClient *minio.Client, ctx context.Context, bucketName string, location string) {
@@ -63,8 +68,9 @@ func createBucket(minioClient *minio.Client, ctx context.Context, bucketName str
 }
 
 func uploadFileToBucket(minioClient *minio.Client, ctx context.Context, bucketName string, objectName string, filePath string, contentType string) {
-	// Upload the zip file with FPutObject
-	info, err := minioClient.FPutObject(ctx, bucketName, objectName, filePath, minio.PutObjectOptions{ContentType: contentType})
+
+	userMetaData := map[string]string{"x-amz-acl": "public-read"} // make it public
+	info, err := minioClient.FPutObject(ctx, bucketName, objectName, filePath, minio.PutObjectOptions{ContentType: contentType, UserMetadata: userMetaData})
 	if err != nil {
 		log.Fatalln(err)
 	}
